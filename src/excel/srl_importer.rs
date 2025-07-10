@@ -35,18 +35,8 @@ pub fn load_srl(path: &str) -> Result<Vec<SRLEntry>> {
     let mut workbook = open_workbook_auto(path)?;
 
 
-    // Debug
-    for name in workbook.sheet_names() {
-        println!("Found sheet: {}", name);
-    }
-
     let range = workbook
         .worksheet_range("Zeitreihen0h15")?;
-
-    for (i, row) in range.rows().enumerate().take(5) {
-    println!("Row {i}: {:?}", row);
-    }
-
 
     // new mutatable vector to store entries in
     let mut entries = Vec::new();
