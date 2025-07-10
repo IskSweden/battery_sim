@@ -4,6 +4,8 @@ use anyhow::Result;
 use csv::Writer;
 use crate::model::srl::SRLEntry;
 
+
+// function creates a csv file, and serializes pushed vector values from srl.rs in a for loop into the csv file.
 pub fn save_to_csv(path: &str, entries: &[SRLEntry]) -> Result<()> {
     // TODO:
     // 1. Take vector from srl_importer
@@ -15,5 +17,9 @@ pub fn save_to_csv(path: &str, entries: &[SRLEntry]) -> Result<()> {
 
     let mut wtr = Writer::from_writer(file);
 
-
+    for entry in entries {
+        wtr.serialize(entry)?
+    }
+    wtr.flush()?;
+    Ok(())
 }

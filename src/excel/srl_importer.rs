@@ -33,9 +33,20 @@ fn parse_number(cell: &DataType) -> Result<f64> {
 // Load srl data in sheet "Zeitreihen0h15 and throw error if not found. Result of function is a vector in SRLEntry in model/srl.rs"
 pub fn load_srl(path: &str) -> Result<Vec<SRLEntry>> {
     let mut workbook = open_workbook_auto(path)?;
+
+
+    // Debug
+    for name in workbook.sheet_names() {
+        println!("Found sheet: {}", name);
+    }
+
     let range = workbook
-        .worksheet_range("Zeitreihen0h15")
-        .ok_or_else(|| anyhow!("Sheet 'Zeitreihen0h15' not found"))??;
+        .worksheet_range("Zeitreihen0h15")?;
+
+    for (i, row) in range.rows().enumerate().take(5) {
+    println!("Row {i}: {:?}", row);
+    }
+
 
     // new mutatable vector to store entries in
     let mut entries = Vec::new();
@@ -43,16 +54,17 @@ pub fn load_srl(path: &str) -> Result<Vec<SRLEntry>> {
     // iterate through rows, skipping first two as they are headers
         for row in range.rows().skip(2) {
 
-        let timestamp = parse_timestamp(&row[0])?;
+        let timestamp = parse_timestamp(&row[0])?; //Row A
 
-        let pos_energy_kwh = parse_number(&row[1])?;
+        let pos_energy_kwh = parse_number(&row[6])?; //Row G
 
-        let neg_energy_kwh = parse_number(&row[2])?;
+        let neg_energy_kwh = parse_number(&row[7])?; //Row H
 
-        let pos_price_eur_mwh = parse_number(&row[3])?;
+        let pos_price_eur_mwh = parse_number(&row[21])?; // Row V
 
-        let neg_price_eur_mwh = parse_number(&row[4])?;
+        let neg_price_eur_mwh = parse_number(&row[22])?; // Row W
 
+        // Adjust rows to excel file. Given input excel had these rows, so index as needed for these.
 
         // Pushing entries to vector in srl.rs
         entries.push(SRLEntry {
