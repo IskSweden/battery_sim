@@ -3,15 +3,11 @@ use std::path::Path;
 use anyhow::Result;
 use csv::Writer;
 use crate::model::srl::SRLEntry;
+use serde::Serialize;
 
 
 // function creates a csv file, and serializes pushed vector values from srl.rs in a for loop into the csv file.
-pub fn save_to_csv(path: &str, entries: &[SRLEntry]) -> Result<()> {
-    // TODO:
-    // 1. Take vector from srl_importer
-    // create a csv (maybe only tmp)
-    // Put data into csv
-    // cleanup tmp csv?
+pub fn save_to_csv<T: Serialize>(path: &str, entries: &[T]) -> Result<()> {
 
     let file = File::create(path)?;
 

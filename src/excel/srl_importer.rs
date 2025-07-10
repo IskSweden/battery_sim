@@ -1,34 +1,7 @@
-use chrono::NaiveDateTime;
-use calamine::{open_workbook_auto, Reader, DataType};
-use anyhow::{Result, anyhow};
+use calamine::{open_workbook_auto, Reader};
+use anyhow::{Result};
 use crate::model::srl::SRLEntry;
-
-// Parse timestamps to native rust understandable stamps. Result of function is a formatted timestamp.
-// This function also handles turning the timestamps from strings to floats. retunrs a 64-bit integer, which is easier to work with.
-fn parse_timestamp(cell: &DataType) -> Result<NaiveDateTime> {
-    match cell {
-        DataType::String(s) => {
-            NaiveDateTime::parse_from_str(s, "%d.%m.%Y %H:%M").map_err(|e| anyhow!(e))
-        }
-        DataType::Float(f) => {
-            let base = NaiveDateTime::parse_from_str("1899-12-30 00:00", "%Y-%m-%d %H:%M")?;
-            Ok(base + chrono::Duration::milliseconds((*f * 86400.0 * 1000.0) as i64))
-        }
-        _ => Err(anyhow!("Invalid timestamp format")),
-    }
-}
-
-// Parse numbers and explicitly convert , to . Result of function is a 64-bit float.
-fn parse_number(cell: &DataType) -> Result<f64> {
-    match cell {
-        DataType::Float(f) => Ok(*f),
-        DataType::String(s) => {
-            let cleaned = s.replace(",", ".").trim().to_string();
-            cleaned.parse::<f64>().map_err(|e| anyhow!(e))
-        }
-        _ => Err(anyhow!("Invalid number format")),
-    }
-}
+use crate::utils::{parse_number, parse_timestamp_dmy}; // helper
 
 // Load srl data in sheet "Zeitreihen0h15 and throw error if not found. Result of function is a vector in SRLEntry in model/srl.rs"
 pub fn load_srl(path: &str) -> Result<Vec<SRLEntry>> {
@@ -42,9 +15,9 @@ pub fn load_srl(path: &str) -> Result<Vec<SRLEntry>> {
     let mut entries = Vec::new();
 
     // iterate through rows, skipping first two as they are headers
-        for row in range.rows().skip(2) {
+    for row in range.rows().skip(2) {
 
-        let timestamp = parse_timestamp(&row[0])?; //Row A
+        let timestamp = parse_timestamp_dmy(&row[0])?; //Row A
 
         let pos_energy_kwh = parse_number(&row[6])?; //Row G
 
