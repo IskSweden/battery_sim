@@ -1,8 +1,6 @@
 use std::fs::File;
-use std::path::Path;
 use anyhow::Result;
 use csv::Writer;
-use crate::model::srl::SRLEntry;
 use serde::Serialize;
 
 
