@@ -2,6 +2,7 @@
 mod excel;
 mod model;
 mod utils;
+mod simulation;
 
 // Error handling
 use anyhow::Result;
@@ -29,9 +30,8 @@ use model::mergedseries::MergedTick;
 
 
 // simulation
-//use simulation::config::Simulationconfig;
-//use simulation::engine::run_simulation;
-//use simulation::tick_result::SimulationTickResult;
+use simulation::engine::run_simulation;
+use simulation::config::SimulationConfig;
 
 
 
@@ -68,8 +68,12 @@ fn main() -> Result<()> {
         save_to_csv("data/output/load_cleaned.csv", &load_1min)?;
         save_to_csv("data/output/srl_cleaned.csv", &srl_1min)?;
         save_to_csv(merged_path, &merged_entries)?;
+        println!("Data pipeline finished. {} Entries ready.", merged_entries.len())
     }
+    println!("Starting simulation");
+    let config = SimulationConfig::default();
+    let sim_results = run_simulation(&merged_entries, &config);
 
-    println!("Data ready. Running simulation. {} amount of data has already been found.", merged_entries.len());
+    println!("Simulation complete. Total ticks: {}", sim_results.len());
     Ok(())
 }
