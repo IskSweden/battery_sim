@@ -19,49 +19,48 @@ use utils::interpolation::{
 
 // CSV export
 use utils::csv_export::save_to_csv;
+use utils::merging_csv::merge_1min_series;
+use utils::file_exists;
 
-// Models / Structs
+// Models
 use model::timeseries::LoadEntry;
 use model::srl::SRLEntry;
 use model::mergedseries::MergedTick;
-use utils::merging_csv::merge_1min_series;
 
-// Date handling
+// External
+use csv::Reader;
 use chrono::{DateTime, Utc};
 
 fn main() -> Result<()> {
-    // Load raw Excel inputs
-    println!("Loading SRL Excel...");
-    let srl_entries: Vec<SRLEntry> = load_srl("data/input/input_srl.xlsx")?;
-    println!("Loaded {} SRL entries", srl_entries.len());
+    let merged_path = "data/output/merged_timeseries.csv";
+    let merged_entries: Vec<MergedTick>;
 
-    println!("Loading Load Curve Excel...");
-    let load_entries: Vec<LoadEntry> = load_load_curve("data/input/input_wirkleistung.xlsx")?;
-    println!("Loaded {} Load entries", load_entries.len());
+    if file_exists(merged_path) {
+        println!("Found existing merged_timeseries.csv — skipping import/interpolation.");
+        let mut rdr = csv::Reader::from_path(merged_path)?;
+        merged_entries = rdr.deserialize().collect::<Result<_, _>>()?;
 
+    } else {
+        println!("Merged CSV not found. Running full pipeline...");
 
-    let start = load_entries.first().unwrap().timestamp;
-    let end = load_entries.last().unwrap().timestamp;
+        let srl_entries = load_srl("data/input/input_srl.xlsx")?;
+        let load_entries = load_load_curve("data/input/input_wirkleistung.xlsx")?;
 
+        let (start, end) = (
+            load_entries.first().unwrap().timestamp,
+            load_entries.last().unwrap().timestamp,
+        );
 
+        let time_grid = generate_time_grid(start, end, 1);
+        let load_1min = interpolate_load_to_1min(&load_entries, &time_grid);
+        let srl_1min = interpolate_srl_to_1min(&srl_entries, &time_grid);
+        merged_entries = merge_1min_series(&load_1min, &srl_1min);
 
-    let time_grid = generate_time_grid(start, end, 1);
+        save_to_csv("data/output/load_cleaned.csv", &load_1min)?;
+        save_to_csv("data/output/srl_cleaned.csv", &srl_1min)?;
+        save_to_csv(merged_path, &merged_entries)?;
+    }
 
-    let load_1min = interpolate_load_to_1min(&load_entries, &time_grid);
-
-    let srl_1min = interpolate_srl_to_1min(&srl_entries, &time_grid);
-
-    let merged_1min = merge_1min_series(&load_1min, &srl_1min);
-
-
-
-
-
-    // Save final merged result to simulation-ready CSV
-    save_to_csv("data/output/load_cleaned.csv", &load_1min)?;
-    save_to_csv("data/output/srl_cleaned.csv", &srl_1min)?;
-    save_to_csv("data/output/merged_timeseries.csv", &merged_1min)?;
-
-
+    println!("Data ready. Running simulation. {} amount of data has already been found.", merged_entries.len());
     Ok(())
 }

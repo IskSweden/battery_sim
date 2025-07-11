@@ -8,6 +8,12 @@ use chrono::{NaiveDateTime, DateTime, Utc};
 use calamine::DataType;
 use anyhow::{Result, anyhow};
 
+use std::path::Path;
+
+pub fn file_exists(path: &str) -> bool {
+    Path::new(path).exists()
+
+}
 
 // parses dmy timestamps from dym to correct float values
 pub fn parse_timestamp_dmy(cell: &DataType) -> Result<DateTime<Utc>> {
