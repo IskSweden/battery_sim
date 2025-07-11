@@ -21,7 +21,6 @@ pub fn generate_time_grid(
 }
 
 
-
 /// Linearly interpolates a scalar value between two timestamps.
 /// alpha = (target - t0) / (t1 - t0)
 pub fn interpolate_scalar(
