@@ -33,6 +33,9 @@ pub fn summarize(ticks: &[SimulationTickResult]) -> SimulationSummary {
         if tick.transformer_violation {
             summary.transformer_violations += 1;
         }
+
+        summary.total_srl_revenue_chf += tick.srl_revenue_pos_chf;
+        summary.total_srl_revenue_chf += tick.srl_revenue_neg_chf;
     }
 
     summary
@@ -66,6 +69,11 @@ impl SimulationSummary {
             self.min_soc_kwh, self.max_soc_kwh
         );
         println!("Transformer violations:    {}", self.transformer_violations);
+
+        println!(
+            "SRL revenue total:         {:>8.2} CHF",
+            self.total_srl_revenue_chf
+        );
 
         println!("===============================\n");
     }

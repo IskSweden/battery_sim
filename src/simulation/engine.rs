@@ -69,6 +69,9 @@ pub fn run_simulation(
             soc_kwh += fulfilled * eff;
         }
 
+        let revenue_pos = tick.srl_pos_price_eur_mwh / 1000.0 * srl_energy_out_kwh;
+        let revenue_neg = -tick.srl_neg_price_eur_mwh / 1000.0 * srl_energy_in_kwh;
+
         // SOC & %
         let soc_usable_kwh = soc_max - soc_min;
         let soc_percent = 100.0 * (soc_kwh - soc_min) / soc_usable_kwh;
@@ -124,6 +127,9 @@ pub fn run_simulation(
 
             grid_net_kw: grid_net_kw,
             transformer_violation,
+
+            srl_revenue_pos_chf: revenue_pos,
+            srl_revenue_neg_chf: revenue_neg,
         };
 
         results.push(result);
