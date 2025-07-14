@@ -52,7 +52,7 @@ pub fn run_simulation(
 
             srl_energy_out_kwh = fulfilled;
             soc_kwh -= fulfilled / eff;
-        } else if tick.srl_neg_kwh > 0.0 {
+        } else if tick.srl_neg_kwh < 0.0 {
             // charge to fulfill SRL_neg
 
             srl_neg_count += 1;
@@ -61,7 +61,7 @@ pub fn run_simulation(
             let max_grid_input = remaining_kwh / eff;
             let e_max = p_max * timestep_h;
 
-            let requested = tick.srl_neg_kwh;
+            let requested = -tick.srl_neg_kwh;
             let possible = max_grid_input.min(e_max);
             let fulfilled = requested.min(possible);
 
@@ -97,6 +97,10 @@ pub fn run_simulation(
             soc_kwh += fulfilled_kwh;
         }
 
+        soc_kwh = soc_kwh.clamp(soc_min, soc_max);
+
+        let soc_percent = 100.0 * (soc_kwh - soc_min) / (soc_max - soc_min);
+
         let grid_net_kw = tick.power_kw + battery_in_kw - battery_out_kw;
 
         let transformer_violation = grid_net_kw.abs() > config.transformer_limit_kw;
@@ -125,8 +129,8 @@ pub fn run_simulation(
         results.push(result);
     }
 
-    //println!("SRL pos ticks: {}", srl_pos_count);
-    //println!("SRL neg ticks: {}", srl_neg_count);
+    println!("SRL pos ticks: {}", srl_pos_count);
+    println!("SRL neg ticks: {}", srl_neg_count);
 
     results
 }

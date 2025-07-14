@@ -4,6 +4,8 @@ mod model;
 mod simulation;
 mod utils;
 
+use std::ptr::slice_from_raw_parts_mut;
+
 // Error handling
 use anyhow::Result;
 
@@ -67,7 +69,11 @@ fn main() -> Result<()> {
         )
     }
     println!("Starting simulation");
-    let config = SimulationConfig::default();
+    let mut config = SimulationConfig::default();
+
+    config.initial_soc_frac = 0.6;
+    config.reserve_fraction = 0.2;
+
     let sim_results = run_simulation(&merged_entries, &config);
 
     // Preview the first few results
