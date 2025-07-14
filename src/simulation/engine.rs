@@ -125,6 +125,9 @@ pub fn run_simulation(
             soc_kwh,
             soc_percent,
 
+            original_grid_kw: tick.power_kw,
+            final_grid_kw: grid_net_kw,
+
             grid_net_kw: grid_net_kw,
             transformer_violation,
 

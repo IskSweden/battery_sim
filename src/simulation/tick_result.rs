@@ -31,4 +31,7 @@ pub struct SimulationTickResult {
     // SRL Revenue
     pub srl_revenue_pos_chf: f64,
     pub srl_revenue_neg_chf: f64,
+
+    pub original_grid_kw: f64,
+    pub final_grid_kw: f64,
 }

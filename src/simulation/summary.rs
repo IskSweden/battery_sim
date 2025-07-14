@@ -1,5 +1,7 @@
 use super::config::SimulationSummary;
 use super::tick_result::SimulationTickResult;
+use chrono::Datelike;
+use std::collections::HashMap;
 
 pub fn summarize(ticks: &[SimulationTickResult]) -> SimulationSummary {
     let mut summary = SimulationSummary {
@@ -20,6 +22,9 @@ pub fn summarize(ticks: &[SimulationTickResult]) -> SimulationSummary {
         amortization_years: None,
     };
 
+    let mut monthly_peak_before: HashMap<(i32, u32), f64> = HashMap::new();
+    let mut monthly_peak_after: HashMap<(i32, u32), f64> = HashMap::new();
+
     for tick in ticks {
         summary.total_srl_out_kwh += tick.srl_energy_out_kwh;
         summary.total_srl_in_kwh += tick.srl_energy_in_kwh;
@@ -36,7 +41,35 @@ pub fn summarize(ticks: &[SimulationTickResult]) -> SimulationSummary {
 
         summary.total_srl_revenue_chf += tick.srl_revenue_pos_chf;
         summary.total_srl_revenue_chf += tick.srl_revenue_neg_chf;
+
+        let year = tick.timestamp.year();
+        let month = tick.timestamp.month();
+        let key = (year, month);
+
+        monthly_peak_before
+            .entry(key)
+            .and_modify(|v| *v = v.max(tick.original_grid_kw))
+            .or_insert(tick.original_grid_kw);
+
+        monthly_peak_after
+            .entry(key)
+            .and_modify(|v| *v = v.max(tick.final_grid_kw))
+            .or_insert(tick.final_grid_kw);
     }
+
+    let mut total_peak_saving_chf = 0.0;
+    let tariff = 10.0; // CHF per kW per month
+
+    for key in monthly_peak_before.keys() {
+        let before = monthly_peak_before.get(key).unwrap_or(&0.0);
+        let after = monthly_peak_after.get(key).unwrap_or(&0.0);
+
+        let saved_kw = (before - after).max(0.0);
+        let saved_chf = saved_kw * tariff;
+        total_peak_saving_chf += saved_chf;
+    }
+
+    summary.peak_shaving_savings_chf = total_peak_saving_chf;
 
     summary
 }
@@ -69,10 +102,15 @@ impl SimulationSummary {
             self.min_soc_kwh, self.max_soc_kwh
         );
         println!("Transformer violations:    {}", self.transformer_violations);
-
+        println!("===============================\n");
+        println!("Economics");
         println!(
             "SRL revenue total:         {:>8.2} CHF",
             self.total_srl_revenue_chf
+        );
+        println!(
+            "Peak shaving savings:   {:>8.2} CHF",
+            self.peak_shaving_savings_chf
         );
 
         println!("===============================\n");
