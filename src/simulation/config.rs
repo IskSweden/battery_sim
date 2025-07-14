@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimulationConfig {
@@ -25,4 +25,27 @@ impl Default for SimulationConfig {
             timestep_minutes: 1.0,
         }
     }
+}
+
+#[derive(Debug)]
+pub struct SimulationSummary {
+    pub total_ticks: usize,
+
+    // Energy flows
+    pub total_srl_out_kwh: f64,
+    pub total_srl_in_kwh: f64,
+    pub total_ps_out_kwh: f64,
+    pub total_ps_in_kwh: f64,
+
+    // SoC extremes
+    pub min_soc_kwh: f64,
+    pub max_soc_kwh: f64,
+
+    // transformer
+    pub transformer_violations: usize,
+
+    // Economics -> to be expanded
+    pub total_srl_revenue_chf: f64,
+    pub peak_shaving_savings_chf: f64,
+    pub amortization_years: Option<f64>,
 }

@@ -1,8 +1,8 @@
 // Project modules
 mod excel;
 mod model;
-mod utils;
 mod simulation;
+mod utils;
 
 // Error handling
 use anyhow::Result;
@@ -12,33 +12,27 @@ use excel::load_importer::load_load_curve;
 use excel::srl_importer::load_srl;
 
 // Interpolation tools
-use utils::interpolation::{
-    generate_time_grid,
-    interpolate_load_to_1min,
-    interpolate_srl_to_1min,
-};
+use utils::interpolation::{generate_time_grid, interpolate_load_to_1min, interpolate_srl_to_1min};
 
 // CSV export
 use utils::csv_export::save_to_csv;
-use utils::merging_csv::merge_1min_series;
 use utils::file_exists;
+use utils::merging_csv::merge_1min_series;
 
 // Models
-use model::timeseries::LoadEntry;
-use model::srl::SRLEntry;
 use model::mergedseries::MergedTick;
-
+use model::srl::SRLEntry;
+use model::timeseries::LoadEntry;
 
 // simulation
-use simulation::engine::run_simulation;
 use simulation::config::SimulationConfig;
-
-
-
+use simulation::config::SimulationSummary;
+use simulation::engine::run_simulation;
+use simulation::summary::summarize;
 
 // External
-use csv::Reader;
 use chrono::{DateTime, Utc};
+use csv::Reader;
 
 fn main() -> Result<()> {
     let merged_path = "data/output/merged_timeseries.csv";
@@ -48,7 +42,6 @@ fn main() -> Result<()> {
         println!("Found existing merged_timeseries.csv — skipping import/interpolation.");
         let mut rdr = csv::Reader::from_path(merged_path)?;
         merged_entries = rdr.deserialize().collect::<Result<_, _>>()?;
-
     } else {
         println!("Merged CSV not found. Running full pipeline...");
 
@@ -68,11 +61,30 @@ fn main() -> Result<()> {
         save_to_csv("data/output/load_cleaned.csv", &load_1min)?;
         save_to_csv("data/output/srl_cleaned.csv", &srl_1min)?;
         save_to_csv(merged_path, &merged_entries)?;
-        println!("Data pipeline finished. {} Entries ready.", merged_entries.len())
+        println!(
+            "Data pipeline finished. {} Entries ready.",
+            merged_entries.len()
+        )
     }
     println!("Starting simulation");
     let config = SimulationConfig::default();
     let sim_results = run_simulation(&merged_entries, &config);
+
+    // Preview the first few results
+    for result in sim_results.iter().take(200) {
+        println!(
+            "{} | SoC: {:>6.1} kWh | PS out: {:>6.1} | PS in: {:>6.1} | Net: {:>6.1} | Violation: {}",
+            result.timestamp,
+            result.soc_kwh,
+            result.battery_out_kw,
+            result.battery_in_kw,
+            result.grid_net_kw,
+            result.transformer_violation
+        );
+    }
+
+    let summary = summarize(&sim_results);
+    summary.print();
 
     println!("Simulation complete. Total ticks: {}", sim_results.len());
     Ok(())
