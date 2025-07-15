@@ -89,7 +89,7 @@ fn main() -> Result<()> {
         );
     }
 
-    let summary = summarize(&sim_results);
+    let summary = summarize(&sim_results, &config);
     summary.print();
 
     println!("Simulation complete. Total ticks: {}", sim_results.len());

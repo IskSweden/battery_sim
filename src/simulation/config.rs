@@ -10,6 +10,8 @@ pub struct SimulationConfig {
     pub reserve_fraction: f64,     // e.g. 0.3 = 30% reserved for SRL
     pub transformer_limit_kw: f64, // e.g. 240.0
     pub timestep_minutes: f64,     // usually 1.0
+    pub battery_price_per_kwh_chf: f64,
+    pub operating_cost_rate: f64,
 }
 
 impl Default for SimulationConfig {
@@ -23,6 +25,8 @@ impl Default for SimulationConfig {
             reserve_fraction: 0.5,
             transformer_limit_kw: 240.0,
             timestep_minutes: 1.0,
+            battery_price_per_kwh_chf: 400.0,
+            operating_cost_rate: 0.01,
         }
     }
 }
@@ -48,4 +52,7 @@ pub struct SimulationSummary {
     pub total_srl_revenue_chf: f64,
     pub peak_shaving_savings_chf: f64,
     pub amortization_years: Option<f64>,
+
+    // Battery wear / Cycles
+    pub battery_cycles: f64,
 }
