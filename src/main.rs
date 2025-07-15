@@ -79,19 +79,6 @@ fn main() -> Result<()> {
     save_to_csv("data/output/simulation.results.csv", &sim_results)?;
     println!("Exported to simulation.results.csv");
 
-    // Preview the first few results
-    for result in sim_results.iter().take(200) {
-        println!(
-            "{} | SoC: {:>6.1} kWh | PS out: {:>6.1} | PS in: {:>6.1} | Net: {:>6.1} | Violation: {}",
-            result.timestamp,
-            result.soc_kwh,
-            result.battery_out_kw,
-            result.battery_in_kw,
-            result.grid_net_kw,
-            result.transformer_violation
-        );
-    }
-
     let summary = summarize(&sim_results, &config);
     summary.print();
 
