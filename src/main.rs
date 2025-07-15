@@ -76,6 +76,9 @@ fn main() -> Result<()> {
 
     let sim_results = run_simulation(&merged_entries, &config);
 
+    save_to_csv("data/output/simulation.results.csv", &sim_results)?;
+    println!("Exported to simulation.results.csv");
+
     // Preview the first few results
     for result in sim_results.iter().take(200) {
         println!(
