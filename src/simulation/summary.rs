@@ -133,13 +133,19 @@ impl SimulationSummary {
         println!("Transformer violations:    {}", self.transformer_violations);
         println!("===============================\n");
         println!("Economics");
+        println!("-------------------------------\n");
         println!(
             "SRL revenue total:            {:>8.2} CHF",
             self.total_srl_revenue_chf
         );
         println!(
-            "Peak shaving savings:         {:>8.2} CHF",
+            "Peak shaving savings:          {:>8.2} CHF",
             self.peak_shaving_savings_chf
+        );
+
+        println!(
+            "Total revenue:                {:>8.2} CHF",
+            self.total_srl_revenue_chf + self.peak_shaving_savings_chf
         );
 
         match self.amortization_years {
