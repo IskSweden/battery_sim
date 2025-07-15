@@ -71,7 +71,7 @@ plt.close()
 
 # Plot 6: Monthly SRL Totals (stacked bar)
 
-df["month"] = df["timestamp"].dt.to_period("M").dt.to_timestamp()
+df["month"] = df["timestamp"].dt.tz_localize(None).dt.to_period("M").dt.to_timestamp()
 monthly = df.groupby("month")[["srl_energy_in_kwh", "srl_energy_out_kwh"]].sum()
 
 monthly.plot(

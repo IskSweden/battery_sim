@@ -21,7 +21,7 @@ pub fn run_simulation(
 
     // SoC constrains
     let soc_usable_kwh = soc_max - soc_min;
-    let soc_percent = 100.0 * (soc_kwh - soc_min) / soc_usable_kwh;
+    let _soc_percent = 100.0 * (soc_kwh - soc_min) / soc_usable_kwh;
 
     // count for srl
     let mut srl_pos_count = 0;
@@ -32,7 +32,7 @@ pub fn run_simulation(
         let mut srl_energy_in_kwh = 0.0;
         let mut srl_energy_out_kwh = 0.0;
 
-        let max_discharge_kwh = ((soc_kwh - soc_min - soc_reserve).max(0.0)) * eff;
+        let _max_discharge_kwh = ((soc_kwh - soc_min - soc_reserve).max(0.0)) * eff;
         let max_charg_kwh = ((soc_max - soc_kwh - soc_reserve).max(0.0)) / eff;
 
         if tick.srl_pos_kwh > 0.0 {

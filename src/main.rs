@@ -4,8 +4,6 @@ mod model;
 mod simulation;
 mod utils;
 
-use std::ptr::slice_from_raw_parts_mut;
-
 // Error handling
 use anyhow::Result;
 
@@ -23,18 +21,11 @@ use utils::merging_csv::merge_1min_series;
 
 // Models
 use model::mergedseries::MergedTick;
-use model::srl::SRLEntry;
-use model::timeseries::LoadEntry;
 
 // simulation
 use simulation::config::SimulationConfig;
-use simulation::config::SimulationSummary;
 use simulation::engine::run_simulation;
 use simulation::summary::summarize;
-
-// External
-use chrono::{DateTime, Utc};
-use csv::Reader;
 
 fn main() -> Result<()> {
     let merged_path = "data/output/merged_timeseries.csv";
