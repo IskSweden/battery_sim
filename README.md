@@ -1,11 +1,13 @@
 # Dokumentation der Batteriesimulation
 
-# WICHIGE VOR INFORMATION:
+# WICHIGE INFORMATION:
 Um dieses Programm verwenden zu können, braucht man rust lokal installiert zu haben. Hier gehts zum download: [Download](https://www.rust-lang.org/tools/install).
-Dazu muss man die korrekten Input Daten an den korrekten ort plazieren. Die Daten sollten in /data/input plaziert sein. Die Excel Dateien sollten die namen:
+Dazu muss man die korrekten Input Daten an den korrekten ort plazieren. Die Daten sollten in /data/input plaziert sein. Die Excel Dateien sollten folgende Namen haben.
 - input_srl.xlsx
 - input_wirkleistung.xlsx
-haben.
+
+
+Um das starten des scripts einfacher zu machen, muss man nur das bash script unter `/Scripts/run_all.sh`. Dies führt die Hauptlogik in Rust aus, aber auch die Python generierung von Grafiken.
 
 
 ## 1. Projektübersicht
