@@ -1,5 +1,13 @@
 # Dokumentation der Batteriesimulation
 
+# WICHIGE VOR INFORMATION:
+Um dieses Programm verwenden zu können, braucht man rust lokal installiert zu haben. Hier gehts zum download: [Download](https://www.rust-lang.org/tools/install).
+Dazu muss man die korrekten Input Daten an den korrekten ort plazieren. Die Daten sollten in /data/input plaziert sein. Die Excel Dateien sollten die namen:
+- input_srl.xlsx
+- input_wirkleistung.xlsx
+haben.
+
+
 ## 1. Projektübersicht
 
 Dieses Projekt implementiert eine Batteriesimulationssoftware, die darauf abzielt, die Leistung eines netzgekoppelten Batteriespeichersystems zu modellieren. Die Simulation berücksichtigt verschiedene Betriebsmodi wie Spitzenlastglättung (Peak Shaving) und die Teilnahme am SRL-Regelenergiemarkt. Es werden auch ökonomische Aspekte, Transformatorgrenzwerte und die Interaktion mit dem Stromnetz erfasst.
