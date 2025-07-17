@@ -7,7 +7,7 @@ Dazu muss man die korrekten Input Daten an den korrekten ort plazieren. Die Date
 - input_wirkleistung.xlsx
 
 
-Um das starten des scripts einfacher zu machen, muss man nur das bash script unter `/Scripts/run_all.sh`. Dies führt die Hauptlogik in Rust aus, aber auch die Python generierung von Grafiken.
+Um das starten des scripts einfacher zu machen, muss man nur das bash script unter `/Scripts/run_all.sh` starten. Dies führt die Hauptlogik in Rust aus, aber auch die Python generierung von Grafiken.
 
 
 ## 1. Projektübersicht
