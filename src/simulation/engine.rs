@@ -65,20 +65,27 @@ pub fn run_simulation(
         let mut battery_in_kw = 0.0;
         let mut battery_out_kw = 0.0;
 
-        if tick.power_kw > 0.0 {
-            let requested_kwh = tick.power_kw.min(p_max) * timestep_h;
+        let threshold = config.ps_threshold_kw;
+        let epsilon = 1e-6;
 
-            let fullfilled_kwh = requested_kwh.min(max_discharge_kwh);
+        // Discharge only if power > +threshold
+        if tick.power_kw > threshold + epsilon {
+            let requested_kwh = (tick.power_kw - threshold).min(p_max) * timestep_h;
+            let fulfilled_kwh = requested_kwh.min(max_discharge_kwh);
 
-            battery_out_kw = fullfilled_kwh / timestep_h;
-            soc_kwh -= fullfilled_kwh;
-        } else if tick.power_kw < 0.0 {
-            let requested_kwh = (-tick.power_kw).min(p_max) * timestep_h;
+            battery_out_kw = fulfilled_kwh / timestep_h;
+            soc_kwh -= fulfilled_kwh;
+        }
+
+        // Charge only if power < -threshold
+        else if tick.power_kw < -threshold - epsilon {
+            let requested_kwh = (-threshold - tick.power_kw).min(p_max) * timestep_h;
             let fulfilled_kwh = requested_kwh.min(max_charge_kwh);
 
             battery_in_kw = fulfilled_kwh / timestep_h;
             soc_kwh += fulfilled_kwh;
         }
+
 
         // SoC and Output
         soc_kwh = soc_kwh.clamp(soc_min, soc_max);

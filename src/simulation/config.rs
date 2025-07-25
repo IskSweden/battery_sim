@@ -12,6 +12,7 @@ pub struct SimulationConfig {
     pub timestep_minutes: f64,     // usually 1.0
     pub battery_price_per_kwh_chf: f64,
     pub operating_cost_rate: f64,
+    pub ps_threshold_kw: f64,
 }
 
 impl Default for SimulationConfig {
@@ -27,6 +28,7 @@ impl Default for SimulationConfig {
             timestep_minutes: 1.0,
             battery_price_per_kwh_chf: 400.0,
             operating_cost_rate: 0.01,
+            ps_threshold_kw: 180.0,
         }
     }
 }

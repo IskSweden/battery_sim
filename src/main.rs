@@ -64,6 +64,7 @@ fn main() -> Result<()> {
 
     config.initial_soc_frac = 0.6;
     config.reserve_fraction = 0.2;
+    config.ps_threshold_kw = 120.0;
 
     let sim_results = run_simulation(&merged_entries, &config);
 
